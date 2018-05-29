@@ -7,11 +7,11 @@ I/O handler
 """
 
 # Todo :
-# * writing output file functions
+#
 
 __author__ = 'ShY'
 __copyright__ = 'Copyright 2018, SHY'
-__version__ = '0.0.1 (20180527)'
+__version__ = '0.1.0 (20180529)'
 __maintainer__ = 'ShY, Pierre Halle'
 __email__ = 'shi4yu2@gmail.com'
 __status__ = 'Development'
@@ -27,7 +27,7 @@ from openpyxl import load_workbook
 # containing keys:
 #     header, header_length, conditions, trial_number
 def processing_stimuli_file(filename, separator='\t', header=True):
-    # type: (str, str, bool) -> dict
+    # type: (str, str, bool) -> tuple
     """
     :param filename: input file name
     :type: filename: str
@@ -36,7 +36,7 @@ def processing_stimuli_file(filename, separator='\t', header=True):
     :param header: if header line exists
     :type: bool
     :return: output_stimuli_dictionary: dictionary of stimuli
-    :rtype: dict
+    :rtype: tuple
     """
     f = open(filename, mode='rU', encoding="utf8")
     plain_text = f.read()
@@ -76,7 +76,7 @@ def processing_stimuli_file(filename, separator='\t', header=True):
     trial_number = len(output_stimuli_dictionary[list_header[1]])
     output_stimuli_dictionary['trial_number'] = trial_number
 
-    return output_stimuli_dictionary
+    return output_stimuli_dictionary, header_index
 
 
 # Filter special line break characters =================
@@ -113,7 +113,7 @@ def filter_empty_item(list_origin):
 # containing keys:
 #     header, header_length, conditions, trial_number
 def processing_stimuli_file_excel(filename):
-    # type: (str) -> dict
+    # type: (str) -> tuple
     """
     Processing excel_file input
     :param filename: Excel file
@@ -133,6 +133,11 @@ def processing_stimuli_file_excel(filename):
         title_sheet.append(item.value)
     header_length = len(title_sheet)
 
+    header_index = {}
+    for condition in title_sheet:
+        index = title_sheet.index(condition)
+        header_index[index] = condition
+
     output_stimuli_dictionary['header_length'] = header_length  # get header_length
     output_stimuli_dictionary['header'] = title_sheet
 
@@ -151,11 +156,11 @@ def processing_stimuli_file_excel(filename):
     trial_number = ws.max_row - 1
     output_stimuli_dictionary['trial_number'] = trial_number
 
-    return output_stimuli_dictionary
+    return output_stimuli_dictionary, header_index
 
 
 def read_stimuli(filename, separator='\t', header=True):
-    # type: (str, str, bool) -> dict
+    # type: (str, str, bool) -> tuple
     """
     Processing stimuli input
     :param filename: file (text or excel)
@@ -165,7 +170,7 @@ def read_stimuli(filename, separator='\t', header=True):
     :param header: if header line exists
     :type header: bool
     :returns: dictionary of stimuli
-    :rtype: dict
+    :rtype: Union[dict, tuple]
     """
     if filename.endswith('.xlsx'):
         return processing_stimuli_file_excel(filename)
@@ -177,5 +182,19 @@ def read_stimuli(filename, separator='\t', header=True):
 
 # ====================== Output ========================
 # ======================================================
-def write_result():
-    pass
+def write_result(filename, result_line, separator="\t"):
+    for i in range(len(result_line)):
+        if i == len(result_line) - 1:
+            print((result_line[i]), end="\n", file=filename)
+        else:
+            print((result_line[i]), end=separator, file=filename)
+    return
+
+
+def write_result_header(result, trial, result_columns):
+    # Result header
+    result_header = trial["header"][:]
+    result_header.extend(result_columns)
+    # print(result_header)
+    write_result(result, result_header)
+    return
