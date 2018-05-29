@@ -143,9 +143,9 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
 
                 # Get end point of the sound
                 if index_b == 1:
-                    xb_measures.append(pygame.time.get_ticks() - 2000)
+                    xb_measures.append(pygame.time.get_ticks() - 2*isi)
                 elif index_b == 0:
-                    xb_measures.append(pygame.time.get_ticks() - 1000)
+                    xb_measures.append(pygame.time.get_ticks() - isi)
 
                 index_b += 1
 
@@ -220,6 +220,7 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
                   "wrong_rt": wrong_rt}
 
     finally:
+        result.close()
         if not train:
             print("End experiment\n")
             pygame.time.wait(1000)
@@ -253,11 +254,16 @@ if __name__ == "__main__":
     result_columns = ["start_A", "duration_A", "end_A", "start_X", "duration_X", "end_X", "start_B",
                       "duration_B", "end_B", "RT", "target_Response", "response", "real_RT", "Correctness"]
 
+    # Result files =======================================================
     subj = sys.argv[1]
-    axb_input = "list_trial/axb_" + subj + ".csv"
-    training_input = "list_trial/training_" + subj + ".csv"
-    axb_result = "result_axb/axb_" + subj + "_result" + ".csv"
-    training_result = "result_axb/training_" + subj + "_result" + ".csv"
+    axb_input = "list_trial/axb_" + str(subj) + ".csv"
+    training_input = "list_trial/training_" + str(subj) + ".csv"
+    axb_result = "result_axb/axb_" + str(subj) + "_result" + ".csv"
+    training_result = "result_axb/training_" + str(subj) + "_result" + ".csv"
+
+    # File containing all results
+    result_training_total = 'result_axb/total_training.csv'
+    result_axb_total = 'result_axb/total_axb.csv'
 
     screen, screen_width, screen_height = psypsyaxb.initialisation_pygame(background)
 
@@ -273,6 +279,8 @@ if __name__ == "__main__":
     print("nb ok: " + str(resume["nb_correct"]) + "/" + str(resume["nb_trials"]))
     print(str(int(resume["correct_rt"]/resume["nb_correct"])))
 
+    
+
     # AXB ===============================================================
     # sampling rate for axb
     pygame.mixer.quit()
@@ -286,4 +294,9 @@ if __name__ == "__main__":
 
     psypsyinterface.display_instruction(instructions.get("end_exp"),
                                         screen, screen_width, screen_height, background)
+
+    # Append result to total file
+    psypsyio.write_total_result(result_training_total, subj, training_result)
+    psypsyio.write_total_result(result_axb_total, subj, axb_result)
+
     pygame.quit()
