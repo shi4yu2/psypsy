@@ -18,6 +18,8 @@ __status__ = 'Development'
 
 import re
 from openpyxl import load_workbook
+from pathlib import Path
+import csv
 
 
 # ====================== Input =========================
@@ -182,19 +184,81 @@ def read_stimuli(filename, separator='\t', header=True):
 
 # ====================== Output ========================
 # ======================================================
-def write_result(filename, result_line, separator="\t"):
+def write_result(f, result_line, separator="\t"):
+    # type: (TextIO, list, str) -> ()
+    """
+    Write result into file
+    :param f: result file
+    :type: f: object
+    :param result_line: result table
+    :type: result_line: list
+    :param separator: column separator
+    :type: separator: str
+    :return:
+    """
     for i in range(len(result_line)):
         if i == len(result_line) - 1:
-            print((result_line[i]), end="\n", file=filename)
+            print((result_line[i]), end="\n", file=f)
         else:
-            print((result_line[i]), end=separator, file=filename)
+            print((result_line[i]), end=separator, file=f)
     return
 
 
-def write_result_header(result, trial, result_columns):
+def write_result_header(filename, trial, result_columns):
+    # type: (str, dict, list) -> ()
+    """
+    Write result header
+    :param filename: result filename
+    :type filename: str
+    :param trial: dictionary of all trials
+    :type trial: dict
+    :param result_columns: additional column for results
+    :type result_columns: list
+    :return:
+    """
     # Result header
     result_header = trial["header"][:]
     result_header.extend(result_columns)
     # print(result_header)
-    write_result(result, result_header)
+    write_result(filename, result_header)
+    return
+
+
+def read_csv(filename):
+    """
+    Read CSV files and return a list of lists
+    :param filename: filename
+    :type filename: str
+    :return: list of lists of str
+    :rtype: list
+    """
+    try:
+        with open(filename, 'r') as csv_file:
+            dialect = csv.Sniffer().sniff(csv_file.readline(), [',', ';', '\t', ' '])
+            csv_file.seek(0)
+            data_frame = csv.reader(csv_file, dialect)
+            output_list = []
+            for row_i in data_frame:
+                output_list.append(row_i)
+            return output_list
+    except OSError:
+        print("File not found")
+
+
+def write_total_result(filename, subj_n, result_input, separator='\t'):
+    result_file = Path(filename)
+    result = read_csv(result_input)
+    if not result_file.is_file():
+        result.insert(1, result[0][:]+["subj"])
+    line_length = len(result[0]) + 1
+
+    f = open(filename, 'a')
+    for i in range(1, len(result)):
+        result[i] = result[i][:] + [subj_n]
+        for j in range(line_length):
+            if j == line_length - 1:
+                print((result[i][j]), end="\n", file=f)
+            else:
+                print((result[i][j]), end=separator, file=f)
+    f.close()
     return
