@@ -9,12 +9,11 @@ An attempt for psychological experiments
 
 ## Installation:
     1. Install all requirements
-        * cd ~/Dropbox/Non-Native\ perception\ of\ geminates/gemination_axb
-        * bash install.sh
+        * $ bash install.sh
 
 ## AXB experiments:
 
-    1. Randomization (under development)
+    1. Randomization
         * training and axb trial files should be placed in "list_trial" folder
         * the name of files should be:
             - training_**.csv (** replaced by number with two digits)
