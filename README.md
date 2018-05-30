@@ -29,17 +29,17 @@ An attempt for psychological experiments
                    etc.
 
 3. Description of Experiment
-    3.1. display instruction of training
+    1. display instruction of training
         * click <space> when finish reading instruction to continue
-    3.2. training session
-    3.3. display instruction of AXB
+    2. training session
+    3. display instruction of AXB
         * click <space> when finish reading instruction to continue
-    3.4. AXB session
+    4. AXB session
         * trial_list.csv contains 192 trials
             - participants will have one breaks at 96th trial
             - No limite of time for breaks
             - once finish the break, click <space> to continue
-    3.5. Results
+    5. Results
         * result files are in the "result_axb" folder
         * result is append to "result_total" file with subject number when experiment is finished
         * the response time is given both in absolute value (from the beginning of the excution of program) and in relative value (response time - start of sound B) 
