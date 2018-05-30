@@ -37,5 +37,5 @@ constraints = {"consonant": 2, "position": 2}
 
 result = psypsyrandom.make_constraints(stimuli_header, constraints)
 result_file = open("constraints.txt", 'w')
-print(result, file=result_file)
+print("constraints = " + str(result), file=result_file)
 # constraint dictionary is in the file "constraints.txt", copy-paste to your code
