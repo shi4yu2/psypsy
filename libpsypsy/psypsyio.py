@@ -189,7 +189,7 @@ def write_result(f, result_line, separator="\t"):
     """
     Write result into file
     :param f: result file
-    :type: f: object
+    :type: f: textIO
     :param result_line: result table
     :type: result_line: list
     :param separator: column separator
@@ -205,11 +205,11 @@ def write_result(f, result_line, separator="\t"):
 
 
 def write_result_header(filename, trial, result_columns):
-    # type: (str, dict, list) -> ()
+    # type: (TextIO, dict, list) -> ()
     """
     Write result header
     :param filename: result filename
-    :type filename: str
+    :type filename: textIO
     :param trial: dictionary of all trials
     :type trial: dict
     :param result_columns: additional column for results
@@ -225,12 +225,13 @@ def write_result_header(filename, trial, result_columns):
 
 
 def read_csv(filename):
+    # type: (str) -> tuple[list, list]
     """
     Read CSV files and return a list of lists
     :param filename: filename
     :type filename: str
-    :return: list of lists of str
-    :rtype: list
+    :return: list of lists of str, list of header
+    :rtype: tuple
     """
     try:
         with open(filename, 'r') as csv_file:
@@ -240,7 +241,8 @@ def read_csv(filename):
             output_list = []
             for row_i in data_frame:
                 output_list.append(row_i)
-            return output_list
+            header = output_list.pop(0)
+            return output_list, header
     except OSError:
         print("File not found")
 

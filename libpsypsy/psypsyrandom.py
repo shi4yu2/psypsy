@@ -26,29 +26,6 @@ import random
 import time
 
 
-def read_csv(filename):
-    # type: (str) -> tuple[list, list]
-    """
-    Read CSV files and return a list of lists
-    :param filename: filename
-    :type filename: str
-    :return: list of lists of str, list of header
-    :rtype: tuple
-    """
-    try:
-        with open(filename, 'r') as csv_file:
-            dialect = csv.Sniffer().sniff(csv_file.readline(), [',', ';', '\t', ' '])
-            csv_file.seek(0)
-            data_frame = csv.reader(csv_file, dialect)
-            output_list = []
-            for row_i in data_frame:
-                output_list.append(row_i)
-            header = output_list.pop(0)
-            return output_list, header
-    except OSError:
-        print("File not found")
-
-
 def swap(table, row_i, row_j):
     # type: (list, int, int) -> list
     """
@@ -210,5 +187,3 @@ def randomise_stimuli(table, max_rep=None, min_gap=None, time_limit=1):
         return table
     else:
         return []
-
-
