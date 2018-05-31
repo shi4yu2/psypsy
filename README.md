@@ -2,23 +2,19 @@
 
 # Installation:
 1. Install all requirements
-    - cd ~/Dropbox/Non-Native\ perception\ of\ geminates/gemination_axb
     - bash install.sh
 
 # AXB experiments:
 
 ## 1. Randomization 
-  1. use randomisation_config.py to generate constraints
-    * explanations are in the file
-
-- using libpsypsy.psypsyrandom module
+- use randomisation_config.py to generate constraints (explanations are in the file)
+- libpsypsy.psypsyrandom module
 - stimuli files are generated after launching experience, and placed in trial_gemination_axb/ folder
 - results files are in result_gemination_axb/ folder
 - a file containing results for all subjects are generated after experiment.
 
 
 ## 2. Launch experiment    
-- cd ~/Dropbox/Non-Native\ perception\ of\ geminates/gemination_axb
 - python3 gemination_axb.py [subjN° in two digits] [part in one digit]
 Example: python3 gemination_axb.py 00 1
          python3 gemination_axb.py 01 1
@@ -59,6 +55,3 @@ Example: python3 gemination_axb.py 00 1
                       ./psypsyinterface.py
                       ./psypsyaxb.py
                       ./psypsyrandom.py
-
-
-
