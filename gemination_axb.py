@@ -3,10 +3,11 @@
 
 __author__ = 'ShY'
 __copyright__ = 'Copyright 2018, SHY'
-__version__ = '0.1.0 (20180529)'
+__version__ = '0.1.0 (20180531)'
 __maintainer__ = 'ShY, Pierre Halle'
 __email__ = 'shi4yu2@gmail.com'
 __status__ = 'Development'
+
 
 import pygame
 import pygame.draw
@@ -21,8 +22,8 @@ import libpsypsy.psypsyaxb as psypsyaxb
 import libpsypsy.psypsyinterface as psypsyinterface
 
 
-# ================================================================
-# AXB exp ========================================================
+# *=*=*=*=*=*=*=*=*=  AXB Experiment =*=*=*=*=*=*=*=*=*
+# *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 def axb(screen, background, input_file, result_file, instructions, isi=1000, fixation_duration=500, train=False):
     try:
         # Import stimuli files =========================================
@@ -40,7 +41,8 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
         nb_trials = nb_correct = nb_wrong = nb_missed = 0
         correct_rt = wrong_rt = 0
 
-        for i in range(trial["trial_number"]):
+        for i in range(2):
+            # for i in range(trial["trial_number"]):
             # for i in range(2):  # modify number in the range() to make test
             screen.fill(background)
             pygame.display.flip()
@@ -51,7 +53,7 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
                     psypsyaxb.axb_pause(screen, screen_width, screen_height, background,
                                         instructions.get("pause"))
 
-            # Processing sound stimuli =================================
+            # Processing sound stimuli =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*
             if train:
                 path = "training/"
             else:
@@ -64,7 +66,7 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
             sound_path = [stimulus_a, stimulus_x, stimulus_b]
 
             # Load stimuli & Compute sound stimuli duration
-            mixed_sounds, duration_sounds = psypsyaxb.mix_sound_stimuli(sound_path)
+            mixed_sounds, duration_sounds = psypsyinterface.mix_sound_stimuli(sound_path)
 
             # Compute target result
             if trial["X"][i][:-2] == trial["A"][i][:-2]:
@@ -78,9 +80,9 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
             for key in header_index:
                 trial_result.append(trial[header_index[key]][i])
 
-            # =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=
-            # Play sounds and record response                           =
-            # =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=
+            # =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+            # Play sounds and record response                          *
+            # =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
             # Display fixation point
             psypsyinterface.point_fixation(screen, fixation_duration)
             # 500ms of display
@@ -98,7 +100,7 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
             pygame.event.pump()
             pygame.event.clear()  # clear event and wait for response
 
-            # Play X and B and record response (Type, Time) =========
+            # Play X and B and record response (Type, Time) =============
             xb_sequence = [mixed_sounds[1], mixed_sounds[2]]
             xb_measures = []
             response = False
@@ -156,14 +158,14 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
             end_sound_b = xb_measures[3]
 
             # Handle empty response
-            # response time ==============================
+            # response time =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*
             if response_time != []:
                 response_time_s = response_time[0]
                 real_rt = response_time_s - start_sound_b
             else:
                 response_time_s = 0
                 real_rt = 0
-            # response type ==============================
+            # response type =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*
             if response_type != []:
                 response_type_s = response_type[0]
             else:
@@ -207,10 +209,14 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
                                  response_time_s, target_response, response_type_s, real_rt, correct])
 
             # Output results
-            psypsyio.write_result(result, trial_result)
+            psypsyio.write_result_line(result, trial_result)
 
             # inter-trial time
             pygame.time.wait(interTrial)
+
+        # Avoid division by zero
+        if nb_correct == 0:
+            nb_correct = 1
 
         resume = {"nb_trials": nb_trials,
                   "nb_correct": nb_correct,
@@ -219,8 +225,9 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
                   "correct_rt": correct_rt,
                   "wrong_rt": wrong_rt}
 
-    finally:
         result.close()
+    finally:
+
         if not train:
             print("End experiment\n")
             pygame.time.wait(1000)
@@ -230,48 +237,63 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
     return resume
 
 
-# MAIN ==========================================================================
+# MAIN =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 if __name__ == "__main__":
-    # Parameter ==========================================================
-    # == Program environment parameter ===================================
+    # Parameter  =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*
+    # == Program environment parameter  =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
     font: str = "helvetica"
     background = (150, 150, 150)  # gray
 
-    # Experiment parameter ===============================================
+    # Experiment parameter =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*
     isi = 1000  # ISI = 1000ms
     interTrial = 1000  # inter-trial time = 1000ms
     fixation_duration = 500  # fixation point duration
-    # ====================================================================
-    # == Parameter =======================================================
 
-    # Instruction path
+    # Instruction path =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*
     instructions = {"start": "instructions/instruction_start.png",
                     "pause": "instructions/instruction_break.png",
                     "end_training": "instructions/instruction_end_training.png",
-                    "end_exp": "instructions/instructions_end_exp.png"}
+                    "end_exp": "instructions/instruction_end_exp.png"}
 
-    # Result file columns ================================================
+    # Result file columns  =*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*
     result_columns = ["start_A", "duration_A", "end_A", "start_X", "duration_X", "end_X", "start_B",
                       "duration_B", "end_B", "RT", "target_Response", "response", "real_RT", "Correctness"]
 
-    # Result files =======================================================
+    # experiments parameters
     subj = sys.argv[1]
-    axb_input = "list_trial/axb_" + str(subj) + ".csv"
-    training_input = "list_trial/training_" + str(subj) + ".csv"
-    axb_result = "result_axb/axb_" + str(subj) + "_result" + ".csv"
-    training_result = "result_axb/training_" + str(subj) + "_result" + ".csv"
+    part = sys.argv[2]
+
+    # origin list for randomisation
+    randomisation_files = ["list_trial/axb_part1.csv", "list_trial/axb_part2.csv"]
+    training_file = "list_trial/training.csv"
+
+    # =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*
+    # Put constraints here                                       #
+    constraints = {5: 2, 6: 2}                                   #
+    constraints_training = {0: 0}                                #
+    # =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*
+
+    psypsyaxb.randomisation_one_part(training_file, "trial_gemination_axb/", "training", subj, constraints_training)
+    psypsyaxb.randomisation_two_parts(randomisation_files, "trial_gemination_axb/", part, subj, constraints)
+
+    # Result files =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*
+    axb_input = "trial_gemination_axb/gemination_axb_" + str(subj) + ".csv"
+    training_input = "trial_gemination_axb/training_" + str(subj) + ".csv"
+    axb_result = "result_gemination_axb/axb_" + str(subj) + ".csv"
+    training_result = "result_gemination_axb/training_" + str(subj) + ".csv"
 
     # File containing all results
-    result_training_total = 'result_axb/total_training.csv'
-    result_axb_total = 'result_axb/total_axb.csv'
+    result_training_total = 'result_gemination_axb/total_training.csv'
+    result_axb_total = 'result_gemination_axb/total_axb.csv'
 
-    screen, screen_width, screen_height = psypsyaxb.initialisation_pygame(background)
+    screen, screen_width, screen_height = psypsyinterface.initialisation_pygame(background)
 
-    # sampling rate for training
+    # Training =*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*
+    # sampling rate for training audio files
     pygame.mixer.quit()
     pygame.mixer.init(16000, -16, 2)
 
-    # Training instruction
+    # training instruction =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
     psypsyinterface.display_instruction(instructions.get("start"),
                                         screen, screen_width, screen_height, background)
 
@@ -279,14 +301,12 @@ if __name__ == "__main__":
     print("nb ok: " + str(resume["nb_correct"]) + "/" + str(resume["nb_trials"]))
     print(str(int(resume["correct_rt"]/resume["nb_correct"])))
 
-    
-
-    # AXB ===============================================================
-    # sampling rate for axb
+    # AXB =*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*=*=**=*=*
+    # sampling rate for axb audio files
     pygame.mixer.quit()
     pygame.mixer.init(44100, -16, 2)
 
-    # AXB instruction
+    # AXB instruction =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
     psypsyinterface.display_instruction(instructions.get("end_training"),
                                         screen, screen_width, screen_height, background)
 
@@ -295,7 +315,7 @@ if __name__ == "__main__":
     psypsyinterface.display_instruction(instructions.get("end_exp"),
                                         screen, screen_width, screen_height, background)
 
-    # Append result to total file
+    # Append result to total file =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*
     psypsyio.write_total_result(result_training_total, subj, training_result)
     psypsyio.write_total_result(result_axb_total, subj, axb_result)
 
