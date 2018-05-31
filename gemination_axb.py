@@ -3,7 +3,7 @@
 
 __author__ = 'ShY'
 __copyright__ = 'Copyright 2018, SHY'
-__version__ = '0.1.0 (20180531)'
+__version__ = '0.2.0 (20180531)'
 __maintainer__ = 'ShY, Pierre Halle'
 __email__ = 'shi4yu2@gmail.com'
 __status__ = 'Development'
