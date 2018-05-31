@@ -41,8 +41,7 @@ def axb(screen, background, input_file, result_file, instructions, isi=1000, fix
         nb_trials = nb_correct = nb_wrong = nb_missed = 0
         correct_rt = wrong_rt = 0
 
-        for i in range(2):
-            # for i in range(trial["trial_number"]):
+        for i in range(trial["trial_number"]):
             # for i in range(2):  # modify number in the range() to make test
             screen.fill(background)
             pygame.display.flip()
