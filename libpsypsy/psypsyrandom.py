@@ -23,6 +23,8 @@ __status__ = 'Development'
 
 import random
 import time
+import itertools
+from libpsypsy.psypsyio import *
 
 
 def swap(table, row_i, row_j):
@@ -228,4 +230,43 @@ def randomise_stimuli(table, max_rep=None, min_gap=None, time_limit=1):
         raise Exception("No possible randomisation")
 
 
+def randomisation_parts(filename, result_path, part, subj, constraints):
+    # type: (list, str, str, str, dict) -> ()
+    """
+    Generic Parts randomisation
+    :param filename: list of stimuli table file
+    :type filename: list
+    :param result_path: result file name
+    :type result_path: str
+    :param part: part indication
+    :type part: str
+    :param subj: subject number
+    :type subj: str
+    :param constraints: constrains on repetition
+    :type constraints: dict
+    """
+    # Generate all permutations of the file list
+    permutations = list(itertools.permutations(filename))
+    length_permutation = len(permutations)
 
+    if int(part) > length_permutation:
+        raise Exception
+
+    # get header
+    _, header = read_csv(filename[0])
+    results = [header[:] + ['part']]
+    # print(list(permutations[0]))
+    # print(length_permutation)
+
+    order = list(permutations[int(part) - 1])
+    for i in range(len(order)):
+        table, _ = read_csv(order[i])
+        table_random = randomise_stimuli(table, max_rep=constraints)
+        for line in range(len(table_random)):
+            table_random[line].append(str(part))
+
+        results += table_random
+
+    result_file = result_path + "gemination_axb_" + subj + ".csv"
+    write_result_table(result_file, results)
+    return
