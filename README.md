@@ -16,7 +16,9 @@
 
 ## 2. Launch experiment    
 - python3 gemination_axb.py [subj_N° in two digits] [part in one digit]
+
 Example: 
+
 ```$ python3 gemination_axb.py 00 1```
 
 ```$ python3 gemination_axb.py 01 1```
