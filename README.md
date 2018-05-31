@@ -19,7 +19,8 @@
 
 Example: 
 
-```$ python3 gemination_axb.py 00 1
+```
+$ python3 gemination_axb.py 00 1
 $ python3 gemination_axb.py 01 1
 ...
 $ python3 gemination_axb.py 98 2
