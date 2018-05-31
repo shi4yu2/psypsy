@@ -2,8 +2,8 @@
 
 # Installation:
 1. Install all requirements
-        * cd ~/Dropbox/Non-Native\ perception\ of\ geminates/gemination_axb
-        * bash install.sh
+    - cd ~/Dropbox/Non-Native\ perception\ of\ geminates/gemination_axb
+    - bash install.sh
 
 # AXB experiments:
 
