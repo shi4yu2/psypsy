@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -15,13 +15,12 @@ to a number expressing the constraint)
 
 __author__ = 'ShY'
 __copyright__ = 'Copyright 2018, SHY'
-__version__ = '0.1.0 (20180530)'
+__version__ = '0.1.0 (20180531)'
 __maintainer__ = 'ShY, Pierre Halle'
 __email__ = 'shi4yu2@gmail.com'
 __status__ = 'Development'
 
 
-import csv
 import random
 import time
 
@@ -43,6 +42,46 @@ def swap(table, row_i, row_j):
     table[row_i] = table[row_j]
     table[row_j] = tmp
     return table
+
+
+def condition_to_keys(header):
+    # type: (list) -> dict
+    """
+    make all columns to a dict of {column_name: column_position}
+    :param header: list of header
+    :type header: list
+    :return header_index: dict of {column_name: column_position}
+    :rtype header_index: dict
+    """
+    header_index = {}
+    for condition in header:
+        index = header.index(condition)
+        header_index[condition] = index
+    return header_index
+
+
+def make_constraints(header, constraints):
+    # type: (list, dict) -> dict
+    """
+    make constraints dict for randomisation
+    :param header: list of header
+    :type header: list
+    :param constraints: constraints of randomisation
+    :type constraints: dict
+    :return position_constrains: constraint format for randomisation
+    :rtype position_constraints: dict
+    """
+    header_index = condition_to_keys(header)
+
+    # create position index
+    position_constraints = {}
+
+    # fill position index with constraints
+    for key, value in constraints.items():
+        position = header_index[key]
+        position_constraints[position] = value
+
+    return position_constraints
 
 
 def shuffle_eq_prob(table, max_rep=None, min_gap=None, time_limit=1):
@@ -70,7 +109,7 @@ def shuffle_eq_prob(table, max_rep=None, min_gap=None, time_limit=1):
         test, _ = check_constraints(table, max_rep, min_gap)
         continue_shuffle = not test  # end condition for while
     if not test:
-        return []
+        raise Exception("No possible randomisation")
     else:
         return table
 
@@ -186,4 +225,7 @@ def randomise_stimuli(table, max_rep=None, min_gap=None, time_limit=1):
     if da:
         return table
     else:
-        return []
+        raise Exception("No possible randomisation")
+
+
+

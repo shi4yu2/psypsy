@@ -11,87 +11,97 @@ AXB experiment support functions
 
 __author__ = 'ShY'
 __copyright__ = 'Copyright 2018, SHY'
-__version__ = '0.1.0 (20180529)'
+__version__ = '0.1.0 (20180531)'
 __maintainer__ = 'ShY, Pierre Halle'
 __email__ = 'shi4yu2@gmail.com'
 __status__ = 'Development'
 
 
 from libpsypsy.psypsyinterface import *
-
-
-# PyGame Environment =========================================
-def initialisation_pygame(background):
-    # Initialisation pyGame ==================================
-    pygame.init()
-    pygame.mixer.init()
-    screen, scr_width, scr_height = setup_screen(background)
-
-    # Fill background (gray)
-    screen.fill(background)
-    pygame.display.flip()
-    return screen, scr_width, scr_height
+from libpsypsy.psypsyio import *
+from libpsypsy.psypsyrandom import *
 
 
 def axb_pause(screen, screen_width, screen_height, background, instruction):
+    # type: (object, int, int, tuple, str) -> ()
+    """
+    Experiment break
+    :param screen: current display surface
+    :type screen: Surface
+    :param screen_width: current display width
+    :type screen_width: int
+    :param screen_height: current display height
+    :type screen_height: int
+    :param background: triple value of background (RGB)
+    :type background: tuple
+    :param instruction: instruction image path
+    :type instruction: str
+    """
     screen.fill(background)
     pygame.display.flip()
     display_instruction(instruction, screen, screen_width, screen_height, background)
     return
 
 
-# *=*=*=*=*=*=*=*= Display =*=*=*=*=*=*=*=*=*
-# *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-def get_screensize():
-    # type: () -> (int, int)
+def randomisation_one_part(filename, result_path, exp_type, subj, constraints):
+    # type: (str, str, str, str, dict) -> ()
     """
-    Get the resolution of the screen
-    :returns: width and height of the screen
-    :rtype: tuple of int
+    Two Parts randomisation
+    :param filename: list of stimuli table file
+    :type filename: list
+    :param result_path: result file name
+    :type result_path: str
+    :param exp_type: experiment indication
+    :type exp_type: str
+    :param subj: subject number
+    :type subj: str
+    :param constraints: constrains on repetition
+    :type constraints: dict
     """
-    infobject = pygame.display.Info()
-    width = infobject.current_w
-    height = infobject.current_h
-    return width, height
+    table, header = read_csv(filename)
+    table_random = randomise_stimuli(table, max_rep=constraints)
+    results = [header] + table_random
+    result_file = result_path + exp_type + "_" + subj + ".csv"
+    write_result_table(result_file, results)
 
 
-def setup_screen(background=(150, 150, 150)):
-    # type: (tuple) -> object
+def randomisation_two_parts(filename, result_path, part, subj, constraints):
+    # type: (list, str, str, str, dict) -> ()
     """
-    Get the resolution of the screen
-    :param background: triple value of background (RGB)
-    :type background: tuple
-    :returns: window: pyGame Surface
-    :rtype: Surface
+    Two Parts randomisation
+    :param filename: list of stimuli table file
+    :type filename: list
+    :param result_path: result file name
+    :type result_path: str
+    :param part: part indication
+    :type part: str
+    :param subj: subject number
+    :type subj: str
+    :param constraints: constrains on repetition
+    :type constraints: dict
     """
-    background_list = list(background)
-    (width, height) = get_screensize()
-    window = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
-    window.fill(background_list)
-    # Deactivate mouse
-    pygame.mouse.set_visible(False)
-    pygame.display.flip()
-    return [window, width, height]
+    f0 = filename[0]
+    f1 = filename[1]
 
+    table_0, header_0 = read_csv(f0)
+    table_1, header_1 = read_csv(f1)
+    header_0.append('part')
 
-# Sounds =====================================================
-def mix_sound_stimuli(sound_path):
-    """
-    :param sound_path: list of path of sound files
-    :type: sound_path: list[str]
-    :return: mixed_sounds: list of pygame sound objects
-    :rtype: mixed_sounds: list[Objects]
-    :return: duration_sounds: list of durations
-    rtype: duration_sounds: list[int]
-    """
-    mixed_sounds = []
-    duration_sounds = []
-    for i in sound_path:
-        sound = pygame.mixer.Sound(i)
-        mixed_sounds.append(sound)
+    table_random_0 = randomise_stimuli(table_0, max_rep=constraints)
+    table_random_1 = randomise_stimuli(table_1, max_rep=constraints)
+    for line in range(len(table_random_0)):
+        table_random_0[line].append(str(part))
 
-        duration = int(round(pygame.mixer.Sound.get_length(sound), 3) * 1000)
-        # 3 = duration in milliseconds
-        duration_sounds.append(duration)
+    for line in range(len(table_random_1)):
+        table_random_1[line].append(str(part))
 
-    return mixed_sounds, duration_sounds
+    if int(part) == 1:
+        results = [header_0] + table_random_0 + table_random_1
+    elif int(part) == 2:
+        results = [header_0] + table_random_1 + table_random_0
+    else:
+        raise Exception
+
+    result_file = result_path + "gemination_axb_" + subj + ".csv"
+    write_result_table(result_file, results)
+    return

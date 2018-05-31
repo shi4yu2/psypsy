@@ -11,7 +11,7 @@ I/O handler
 
 __author__ = 'ShY'
 __copyright__ = 'Copyright 2018, SHY'
-__version__ = '0.1.0 (20180529)'
+__version__ = '0.2.0 (20180531)'
 __maintainer__ = 'ShY, Pierre Halle'
 __email__ = 'shi4yu2@gmail.com'
 __status__ = 'Development'
@@ -184,7 +184,7 @@ def read_stimuli(filename, separator='\t', header=True):
 
 # ====================== Output ========================
 # ======================================================
-def write_result(f, result_line, separator="\t"):
+def write_result_line(f, result_line, separator="\t"):
     # type: (TextIO, list, str) -> ()
     """
     Write result into file
@@ -194,13 +194,34 @@ def write_result(f, result_line, separator="\t"):
     :type: result_line: list
     :param separator: column separator
     :type: separator: str
-    :return:
     """
     for i in range(len(result_line)):
         if i == len(result_line) - 1:
             print((result_line[i]), end="\n", file=f)
         else:
             print((result_line[i]), end=separator, file=f)
+    return
+
+
+def write_result_table(filename, result, separator="\t"):
+    # type: (str, list, str) -> ()
+    """
+    Write result into file
+    :param filename: result file
+    :type: filename: str
+    :param result result table
+    :type: result: list
+    :param separator: column separator
+    :type: separator: str
+    """
+    f = open(filename, 'w')
+    for result_line in result:
+        for i in range(len(result_line)):
+            if i == len(result_line) - 1:
+                print((result_line[i]), end="\n", file=f)
+            else:
+                print((result_line[i]), end=separator, file=f)
+    f.close()
     return
 
 
@@ -220,7 +241,7 @@ def write_result_header(filename, trial, result_columns):
     result_header = trial["header"][:]
     result_header.extend(result_columns)
     # print(result_header)
-    write_result(filename, result_header)
+    write_result_line(filename, result_header)
     return
 
 
@@ -249,13 +270,18 @@ def read_csv(filename):
 
 def write_total_result(filename, subj_n, result_input, separator='\t'):
     result_file = Path(filename)
-    result = read_csv(result_input)
-    if not result_file.is_file():
-        result.insert(1, result[0][:]+["subj"])
+    result, header = read_csv(result_input)
+
+    first = result_file.is_file()
+    f = open(filename, 'a')
+
+    if not first:
+        header.append("subj")
+        write_result_line(f, header)
+
     line_length = len(result[0]) + 1
 
-    f = open(filename, 'a')
-    for i in range(1, len(result)):
+    for i in range(len(result)):
         result[i] = result[i][:] + [subj_n]
         for j in range(line_length):
             if j == line_length - 1:

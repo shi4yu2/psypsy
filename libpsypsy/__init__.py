@@ -1,1 +1,1 @@
-__all__ = ['psypsyio', 'psypsyaxb', 'psypsyinterface']
+__all__ = ['psypsyio', 'psypsyaxb', 'psypsyinterface', 'psypsyrandom']
