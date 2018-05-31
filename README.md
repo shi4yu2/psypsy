@@ -8,6 +8,9 @@
 # AXB experiments:
 
 ## 1. Randomization 
+  1. use randomisation_config.py to generate constraints
+    * explanations are in the file
+
 - using libpsypsy.psypsyrandom module
 - stimuli files are generated after launching experience, and placed in trial_gemination_axb/ folder
 - results files are in result_gemination_axb/ folder
@@ -56,7 +59,6 @@ Example: python3 gemination_axb.py 00 1
                       ./psypsyinterface.py
                       ./psypsyaxb.py
                       ./psypsyrandom.py
-
 
 
 
