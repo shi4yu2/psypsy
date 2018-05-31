@@ -2,7 +2,7 @@
 
 # Installation:
 1. Install all requirements
-    - '''bash install.sh'''
+ - ```$ bash install.sh```
 
 # AXB experiments:
 
@@ -16,12 +16,12 @@
 
 ## 2. Launch experiment    
 - python3 gemination_axb.py [subjN° in two digits] [part in one digit]
-Example: '''python3 gemination_axb.py 00 1
-         python3 gemination_axb.py 01 1
+Example: ```$ python3 gemination_axb.py 00 1
+         $ python3 gemination_axb.py 01 1
          ...
-         python3 gemination_axb.py 98 2
-         python3 gemination_axb.py 99 2
-         etc.'''
+         $ python3 gemination_axb.py 98 2
+         $ python3 gemination_axb.py 99 2
+         etc.```
 
 ## 3. Description of Experiment
 1. display instruction of training
