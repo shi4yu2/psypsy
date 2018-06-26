@@ -7,7 +7,9 @@ Lib psypsy (PSYchology Python by Shi Yu)
 * psypsyaxb.py  (Specific functions for AXB experiments)
 
 # Import module
+```
 from libpsypsy.psypsyio import *
 from libpsypsy.psypsyinterface import *
 from libpsypsy.psypsyrandom import *
 from libpsypsy.psypsyaxb import *
+````
